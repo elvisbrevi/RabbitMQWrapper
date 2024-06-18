@@ -1,0 +1,26 @@
+{
+  "name": "sag-rabbitmq-library",
+  "version": "1.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/amqplib": "^0.10.5",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^20.14.3",
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.5",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4"
+  }
+}
