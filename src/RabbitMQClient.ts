@@ -112,12 +112,15 @@ class RabbitMQClient {
           `[*] Waiting for messages in '${queue}'. To exit press CTRL+C`
         );
 
-        this.channel.consume(queue, (msg) => {
-          if (msg !== null) {
-            onMessage(msg.content.toString());
-            this.channel?.ack(msg);
-          }
-        });
+        await this.channel.consume(
+          queue,
+          (msg) => {
+            if (msg !== null) {
+              onMessage(msg.content.toString());
+            }
+          },
+          { noAck: true }
+        );
       } else {
         throw new Error("Error en la conexión a RabbitMQ");
       }

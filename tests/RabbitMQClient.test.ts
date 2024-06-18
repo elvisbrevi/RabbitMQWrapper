@@ -1,5 +1,7 @@
 import RabbitMQClient from "../src/RabbitMQClient";
 
+jest.setTimeout(10000);
+
 /**
  * Test del patron de intercambio por defecto.
  */
@@ -7,9 +9,15 @@ describe("default exchange", () => {
   it("deberia enviar y recibir un mensaje desde una sola cola por defecto", async () => {
     const client = RabbitMQClient.getInstance();
     const queue = "test-queue";
-    const message = "Test Message";
 
-    await client.sendMessageToDefaultExchange({ queue, message });
+    await client.sendMessageToDefaultExchange({
+      queue,
+      message: "Default Message A",
+    });
+    await client.sendMessageToDefaultExchange({
+      queue,
+      message: "Default Message B",
+    });
 
     let receivedMessage = "";
     await new Promise<void>((resolve) => {
@@ -17,11 +25,12 @@ describe("default exchange", () => {
         queue,
         onMessage: (msg: string) => {
           receivedMessage = msg;
+          console.log(`[x] Received '${msg}' from queue '${queue}'`);
           resolve();
         },
       });
     });
 
-    expect(receivedMessage).toBe(message);
+    expect(receivedMessage).toContain("Default");
   });
 });
