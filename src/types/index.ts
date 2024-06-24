@@ -5,7 +5,18 @@ export interface MessageOptions {
   /**
    * La cola a la que se enviará el mensaje.
    */
-  queue: string;
+  queue?: string;
+
+  /**
+   * Intercambio de mensajes.
+   */
+  exchange?: string;
+
+  /**
+   * El clave del mensaje.
+   */
+  key?: string;
+
   /**
    * El mensaje a enviar.
    */
@@ -19,7 +30,18 @@ export interface ConsumeOptions {
   /**
    * La cola de la que se consumirá el mensaje.
    */
-  queue: string;
+  queue?: string;
+
+  /**
+   * Intercambio de mensajes.
+   */
+  exchange?: string;
+
+  /**
+   * El clave del mensaje.
+   */
+  key?: string;
+
   /**
    * El callback que se ejecutará cuando se reciba un mensaje.
    */
