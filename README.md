@@ -1,0 +1,2 @@
+# RabbitMQWrapper
+RabbitMQ Wrapper
