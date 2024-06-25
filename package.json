@@ -1,17 +1,20 @@
 {
   "name": "sag-rabbitmq-library",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsc",
+    "prepublishOnly": "npm run build",
     "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "rimraf": "^3.0.0",
     "@jest/globals": "^29.7.0",
     "@types/amqplib": "^0.10.5",
     "@types/jest": "^27.5.2",
