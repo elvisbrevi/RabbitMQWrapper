@@ -8,19 +8,16 @@
     "clean": "rimraf dist",
     "build": "npm run clean && tsc",
     "prepublishOnly": "npm run build",
-    "test": "jest"
+    "test": "ts-node tests/RabbitMQClient.test.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "rimraf": "^3.0.0",
-    "@jest/globals": "^29.7.0",
     "@types/amqplib": "^0.10.5",
-    "@types/jest": "^27.5.2",
     "@types/node": "^20.14.3",
-    "jest": "^27.5.1",
-    "ts-jest": "^27.1.5",
+    "rimraf": "^3.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   },
   "dependencies": {
