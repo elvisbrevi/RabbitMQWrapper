@@ -1,22 +1,7 @@
-import { RabbitMQExchange } from "./RabbitMQExchange";
-import amqp, { Channel, Connection } from "amqplib";
+import { BaseExchange } from "./BaseExchange";
 import { MessageOptions, ConsumeOptions } from "../types";
 
-export class FanoutExchange implements RabbitMQExchange {
-  private connection: Connection | null = null;
-  private channel: Channel | null = null;
-  private readonly rabbitMQUrl: string = "amqp://localhost";
-
-  /**
-   * Inicia la conexión a RabbitMQ.
-   */
-  private async connect() {
-    if (!this.connection) {
-      this.connection = await amqp.connect(this.rabbitMQUrl);
-      this.channel = await this.connection.createChannel();
-    }
-  }
-
+export class FanoutExchange extends BaseExchange {
   /**
    * Envía un mensaje utilizando el patron de intercambio por defecto.
    * El intercambio por defecto es el que se utiliza para enviar mensajes a un solo destinatario.
@@ -68,7 +53,7 @@ export class FanoutExchange implements RabbitMQExchange {
   public async consumeMessage({
     exchange = "",
     onMessage,
-  }: ConsumeOptions): Promise<void> {
+  }: ConsumeOptions): Promise<String> {
     try {
       await this.connect();
       if (this.channel) {
@@ -85,15 +70,20 @@ export class FanoutExchange implements RabbitMQExchange {
         );
         await this.channel.bindQueue(q.queue, exchange, "");
 
-        await this.channel.consume(
-          q.queue,
-          (msg) => {
-            if (msg !== null) {
-              onMessage(msg.content.toString());
-            }
-          },
-          { noAck: true }
-        );
+        return new Promise((resolve) => {
+          this.channel!.consume(
+            q.queue,
+            (msg) => {
+              if (msg !== null) {
+                const message = msg.content.toString();
+                onMessage(message);
+                this.channel!.cancel(msg.fields.consumerTag);
+                resolve(message);
+              }
+            },
+            { noAck: true }
+          );
+        });
       } else {
         throw new Error("Error en la conexión a RabbitMQ");
       }
@@ -101,6 +91,5 @@ export class FanoutExchange implements RabbitMQExchange {
       console.error(error);
       throw new Error("Error en la conexión a RabbitMQ");
     }
-    return;
   }
 }
