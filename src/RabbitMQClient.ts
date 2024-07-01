@@ -1,5 +1,5 @@
 import { ExchangeType } from "./enums/ExchangeType";
-import { MessageOptions, ConsumeOptions } from "./types";
+import { BaseMessageOptions, BaseConsumeOptions } from "./types/BaseTypes";
 import { ExchangeFactory } from "./exchanges/ExchangeFactory";
 
 class RabbitMQClient {
@@ -9,17 +9,17 @@ class RabbitMQClient {
     this.exchangeFactory = new ExchangeFactory();
   }
 
-  public async sendMessage(
+  public async sendMessage<T extends BaseMessageOptions>(
     exchangeType: ExchangeType,
-    options: MessageOptions
+    options: T
   ) {
     const exchange = this.exchangeFactory.getExchange(exchangeType);
     await exchange.sendMessage(options);
   }
 
-  public async consumeMessage(
+  public async consumeMessage<T extends BaseConsumeOptions>(
     exchangeType: ExchangeType,
-    options: ConsumeOptions
+    options: T
   ) {
     const exchange = this.exchangeFactory.getExchange(exchangeType);
     return await exchange.consumeMessage(options);

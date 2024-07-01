@@ -1,5 +1,8 @@
 import { BaseExchange } from "./BaseExchange";
-import { MessageOptions, ConsumeOptions } from "../types";
+import {
+  DirectMessageOptions,
+  DirectConsumeOptions,
+} from "../types/DirectExchangeTypes";
 
 export class DirectExchange extends BaseExchange {
   /**
@@ -20,7 +23,7 @@ export class DirectExchange extends BaseExchange {
     exchange = "",
     key = "",
     message,
-  }: MessageOptions): Promise<void> {
+  }: DirectMessageOptions): Promise<void> {
     try {
       await this.connect();
       if (this.channel) {
@@ -58,7 +61,7 @@ export class DirectExchange extends BaseExchange {
     exchange = "",
     key = "",
     onMessage,
-  }: ConsumeOptions): Promise<String> {
+  }: DirectConsumeOptions): Promise<String> {
     try {
       await this.connect();
       if (this.channel) {

@@ -1,5 +1,8 @@
 import { BaseExchange } from "./BaseExchange";
-import { MessageOptions, ConsumeOptions } from "../types";
+import {
+  FanoutMessageOptions,
+  FanoutConsumeOptions,
+} from "../types/FanoutExchangeTypes";
 
 export class FanoutExchange extends BaseExchange {
   /**
@@ -18,7 +21,7 @@ export class FanoutExchange extends BaseExchange {
   public async sendMessage({
     exchange = "",
     message,
-  }: MessageOptions): Promise<void> {
+  }: FanoutMessageOptions): Promise<void> {
     try {
       await this.connect();
       if (this.channel) {
@@ -53,7 +56,7 @@ export class FanoutExchange extends BaseExchange {
   public async consumeMessage({
     exchange = "",
     onMessage,
-  }: ConsumeOptions): Promise<String> {
+  }: FanoutConsumeOptions): Promise<String> {
     try {
       await this.connect();
       if (this.channel) {

@@ -1,5 +1,8 @@
 import { BaseExchange } from "./BaseExchange";
-import { MessageOptions, ConsumeOptions } from "../types";
+import {
+  DefaultMessageOptions,
+  DefaultConsumeOptions,
+} from "../types/DefaultExchangeTypes";
 
 export class DefaultExchange extends BaseExchange {
   /**
@@ -18,7 +21,7 @@ export class DefaultExchange extends BaseExchange {
   public async sendMessage({
     queue = "",
     message,
-  }: MessageOptions): Promise<void> {
+  }: DefaultMessageOptions): Promise<void> {
     try {
       await this.connect();
       if (this.channel) {
@@ -51,7 +54,7 @@ export class DefaultExchange extends BaseExchange {
   public async consumeMessage({
     queue = "",
     onMessage,
-  }: ConsumeOptions): Promise<String> {
+  }: DefaultConsumeOptions): Promise<String> {
     try {
       await this.connect();
       if (this.channel) {

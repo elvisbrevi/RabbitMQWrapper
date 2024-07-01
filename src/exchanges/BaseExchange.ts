@@ -1,5 +1,5 @@
 import amqp, { Channel, Connection } from "amqplib";
-import { MessageOptions, ConsumeOptions } from "../types";
+import { BaseMessageOptions, BaseConsumeOptions } from "../types/BaseTypes";
 
 export abstract class BaseExchange {
   protected connection: Connection | null = null;
@@ -13,6 +13,6 @@ export abstract class BaseExchange {
     }
   }
 
-  abstract sendMessage(options: MessageOptions): Promise<void>;
-  abstract consumeMessage(options: ConsumeOptions): Promise<String>;
+  abstract sendMessage(options: BaseMessageOptions): Promise<void>;
+  abstract consumeMessage(options: BaseConsumeOptions): Promise<String>;
 }
