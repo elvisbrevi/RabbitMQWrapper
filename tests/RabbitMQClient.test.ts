@@ -3,9 +3,6 @@ import { resolve } from "path";
 import { ExchangeType } from "../src/enums/ExchangeType";
 import RabbitMQClient from "../src/RabbitMQClient";
 
-// Configuración del tiempo de espera para la prueba
-const TEST_TIMEOUT = 50000;
-
 (async function runTests() {
   console.log("Running tests...");
 
@@ -14,7 +11,7 @@ const TEST_TIMEOUT = 50000;
     console.log(
       "Test: deberia enviar y recibir un mensaje desde una sola cola por defecto"
     );
-    const client = new RabbitMQClient();
+    const client = new RabbitMQClient({ url: "localhost" });
     const queue = "default-queue";
 
     await client.sendMessage(ExchangeType.DEFAULT, {
@@ -47,7 +44,7 @@ const TEST_TIMEOUT = 50000;
     console.log(
       "Test: deberia enviar un mensaje y ser recibido por dos consumidores Fanout Exchange"
     );
-    const client = new RabbitMQClient();
+    const client = new RabbitMQClient({ url: "localhost" });
     const exchange = "fanout-exchange";
 
     // Configura los consumidores antes de enviar el mensaje
@@ -100,7 +97,7 @@ const TEST_TIMEOUT = 50000;
     console.log(
       "Test: deberia enviar un mensaje distinto para cada cola Direct Exchange"
     );
-    const client = new RabbitMQClient();
+    const client = new RabbitMQClient({ url: "localhost" });
     const exchange = "direct-exchange";
 
     // Configura los consumidores antes de enviar el mensaje

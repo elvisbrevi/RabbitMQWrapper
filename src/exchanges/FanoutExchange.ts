@@ -6,17 +6,17 @@ import {
 
 export class FanoutExchange extends BaseExchange {
   /**
-   * Envía un mensaje utilizando el patron de intercambio por defecto.
-   * El intercambio por defecto es el que se utiliza para enviar mensajes a un solo destinatario.
-   * @param {MessageOptions} options - Objeto con los parámetros necesarios para enviar el mensaje.
+   * Envía un mensaje utilizando el patron de intercambio Fanout.
+   * El intercambio Fanout es el que se utiliza para enviar mensajes a varios destinatarios.
+   * @param {FanoutMessageOptions} options - Objeto con los parámetros necesarios para enviar el mensaje.
    * @returns {Promise<void>} - Promise que resolve cuando el mensaje se envía correctamente.
    * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la envío del mensaje.
    * @example
-   * const client = RabbitMQClient.getInstance(ExchangeType.FANOUT);
-   * const exchange = "test-exchange";
+   * const client = new RabbitMQClient();
+   * const exchange = "fanout-exchange";
    * const message = "Test Message";
    *
-   * await client.sendMessage({ exchange, message });
+   * await client.sendMessage(ExchangeType.FANOUT, { exchange, message });
    */
   public async sendMessage({
     exchange = "",
@@ -40,18 +40,17 @@ export class FanoutExchange extends BaseExchange {
   }
 
   /**
-   * Consume un mensaje utilizando el patron de intercambio fanout.
-   * @param {ConsumeOptions} options - Objeto con los parámetros necesarios para consumir el mensaje.
-   * @returns {Promise<void>} - Promise que resolve cuando se consume el mensaje correctamente.
+   * Consume un mensaje utilizando el patron de intercambio Fanout.
+   * @param {FanoutConsumeOptions} options - Objeto con los parámetros necesarios para consumir el mensaje.
+   * @returns {Promise<String>} - Promise que resolve cuando se consume el mensaje correctamente.
    * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la consumición del mensaje.
    * @example
-   * const client = RabbitMQClient.getInstance(ExchangeType.FANOUT);
-   * const exchange = "test-exchange";
+   * const client = new RabbitMQClient();
+   * const exchange = "fanout-exchange";
    * const onMessage = (msg: string) => {
-   *   console.log(`[x] Received '${msg}' from exchange '${exchange}'`);
-   * };
-   *
-   * await client.consumeMessage({ exchange, onMessage });
+   *   console.log(`[x] Received '${msg}' from exchange '${exchange}' and routing key '${key}'`);
+   * }
+   * await client.consumeMessage(ExchangeType.FANOUT, { exchange, onMessage });
    */
   public async consumeMessage({
     exchange = "",

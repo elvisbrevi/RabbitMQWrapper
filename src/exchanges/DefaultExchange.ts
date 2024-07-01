@@ -8,15 +8,14 @@ export class DefaultExchange extends BaseExchange {
   /**
    * Envía un mensaje utilizando el patron de intercambio por defecto.
    * El intercambio por defecto es el que se utiliza para enviar mensajes a un solo destinatario.
-   * @param {MessageOptions} options - Objeto con los parámetros necesarios para enviar el mensaje.
+   * @param {DefaultMessageOptions} options - Objeto con los parámetros necesarios para enviar el mensaje.
    * @returns {Promise<void>} - Promise que resolve cuando el mensaje se envía correctamente.
    * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la envío del mensaje.
    * @example
-   * const client = RabbitMQClient.getInstance(ExchangeType.DEFAULT);
-   * const queue = "test-queue";
-   * const message = "Test Message";
-   *
-   * await client.sendMessage({ queue, message });
+   * const client = new RabbitMQClient();
+   * const queue = "default-queue";
+   * const message = "Default Message";
+   * await client.sendMessage(ExchangeType.DEFAULT, { queue, message });
    */
   public async sendMessage({
     queue = "",
@@ -39,17 +38,16 @@ export class DefaultExchange extends BaseExchange {
 
   /**
    * Consume un mensaje utilizando el patron de intercambio por defecto.
-   * @param {ConsumeOptions} options - Objeto con los parámetros necesarios para consumir el mensaje.
-   * @returns {Promise<void>} - Promise que resolve cuando se consume el mensaje correctamente.
+   * @param {DefaultConsumeOptions} options - Objeto con los parámetros necesarios para consumir el mensaje.
+   * @returns {Promise<String>} - Promise que resolve cuando se consume el mensaje correctamente.
    * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la consumición del mensaje.
    * @example
-   * const client = RabbitMQClient.getInstance(ExchangeType.DEFAULT);
-   * const queue = "test-queue";
+   * const client = new RabbitMQClient();
+   * const queue = "default-queue";
    * const onMessage = (msg: string) => {
    *   console.log(`[x] Received '${msg}' from queue '${queue}'`);
-   * };
-   *
-   * await client.consumeMessage({ queue, onMessage });
+   * }
+   * await client.consumeMessage(ExchangeType.DEFAULT, { queue, onMessage });
    */
   public async consumeMessage({
     queue = "",

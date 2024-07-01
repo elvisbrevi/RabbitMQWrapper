@@ -1,14 +1,21 @@
 import amqp, { Channel, Connection } from "amqplib";
 import { BaseMessageOptions, BaseConsumeOptions } from "../types/BaseTypes";
+import { RabbitMQConfig } from "../types";
 
 export abstract class BaseExchange {
   protected connection: Connection | null = null;
   protected channel: Channel | null = null;
-  protected readonly rabbitMQUrl: string = "amqp://localhost";
+
+  constructor(protected config: RabbitMQConfig) {}
 
   protected async connect() {
     if (!this.connection) {
-      this.connection = await amqp.connect(this.rabbitMQUrl);
+      const { url, username, password } = this.config;
+      const connectionString =
+        username && password
+          ? `amqp://${username}:${password}@${url.split("//")[1]}`
+          : `amqp://${url}`;
+      this.connection = await amqp.connect(connectionString);
       this.channel = await this.connection.createChannel();
     }
   }
