@@ -1,9 +1,12 @@
 {
   "name": "sag-rabbitmq-library",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && tsc",
