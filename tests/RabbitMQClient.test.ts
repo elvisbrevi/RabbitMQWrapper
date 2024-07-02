@@ -1,5 +1,4 @@
 const assert = require("assert");
-import { resolve } from "path";
 import { ExchangeType } from "../src/enums/ExchangeType";
 import RabbitMQClient from "../src/RabbitMQClient";
 
