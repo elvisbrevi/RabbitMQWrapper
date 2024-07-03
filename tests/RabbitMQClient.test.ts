@@ -41,26 +41,39 @@ import RabbitMQClient from "../src/RabbitMQClient";
   // Test del patrón de intercambio Fanout
   async function testFanoutExchange() {
     console.log(
-      "Test: deberia enviar un mensaje y ser recibido por dos consumidores Fanout Exchange"
+      "Test: debería enviar un mensaje y ser recibido por dos consumidores Fanout Exchange"
     );
     const client = new RabbitMQClient({ url: "localhost" });
     const exchange = "fanout-exchange";
 
+    let messageReceivedA = false;
+    let messageReceivedB = false;
+
     // Configura los consumidores antes de enviar el mensaje
-    const consumePromiseA = client.consumeMessage(ExchangeType.FANOUT, {
+    client.consumeMessage(ExchangeType.FANOUT, {
       exchange,
       onMessage: (msg: string) => {
         console.log(
           `[x] Received '${msg}' from exchange '${exchange}' (Consumer A)`
         );
+        messageReceivedA = true;
+        assert(
+          msg.includes("Fanout"),
+          `Expected received message to contain "Fanout", but got "${msg}"`
+        );
       },
     });
 
-    const consumePromiseB = client.consumeMessage(ExchangeType.FANOUT, {
+    client.consumeMessage(ExchangeType.FANOUT, {
       exchange,
       onMessage: (msg: string) => {
         console.log(
           `[x] Received '${msg}' from exchange '${exchange}' (Consumer B)`
+        );
+        messageReceivedB = true;
+        assert(
+          msg.includes("Fanout"),
+          `Expected received message to contain "Fanout", but got "${msg}"`
         );
       },
     });
@@ -75,55 +88,52 @@ import RabbitMQClient from "../src/RabbitMQClient";
     });
 
     // Espera a que ambos consumidores reciban el mensaje
-    const [receivedMessageA, receivedMessageB] = await Promise.all([
-      consumePromiseA,
-      consumePromiseB,
-    ]);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    assert(
-      receivedMessageA.includes("Fanout"),
-      `Expected received message to contain "Fanout", but got "${receivedMessageA}"`
-    );
-    assert(
-      receivedMessageB.includes("Fanout"),
-      `Expected received message to contain "Fanout", but got "${receivedMessageB}"`
-    );
+    assert(messageReceivedA, "Consumer A did not receive the message");
+    assert(messageReceivedB, "Consumer B did not receive the message");
+
     console.log("Test passed");
   }
 
   // Test del patrón de intercambio Direct
   async function testDirectExchange() {
     console.log(
-      "Test: deberia enviar un mensaje distinto para cada cola Direct Exchange"
+      "Test: debería enviar un mensaje distinto para cada cola Direct Exchange"
     );
     const client = new RabbitMQClient({ url: "localhost" });
     const exchange = "direct-exchange";
 
+    let messageReceivedA = "";
+    let messageReceivedB = "";
+
     // Configura los consumidores antes de enviar el mensaje
-    const consumePromiseA = client.consumeMessage(ExchangeType.DIRECT, {
+    client.consumeMessage(ExchangeType.DIRECT, {
       exchange,
       key: "key-a",
       onMessage: (msg: string) => {
         console.log(
           `[x] Received '${msg}' from exchange '${exchange}' (Consumer A)`
         );
+        messageReceivedA = msg;
       },
     });
 
-    const consumePromiseB = client.consumeMessage(ExchangeType.DIRECT, {
+    client.consumeMessage(ExchangeType.DIRECT, {
       exchange,
       key: "key-b",
       onMessage: (msg: string) => {
         console.log(
           `[x] Received '${msg}' from exchange '${exchange}' (Consumer B)`
         );
+        messageReceivedB = msg;
       },
     });
 
     // Espera un momento para asegurarte de que los consumidores estén listos
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Envía el mensaje
+    // Envía los mensajes
     await client.sendMessage(ExchangeType.DIRECT, {
       exchange,
       key: "key-a",
@@ -137,18 +147,15 @@ import RabbitMQClient from "../src/RabbitMQClient";
     });
 
     // Espera a que ambos consumidores reciban el mensaje
-    const [receivedMessageA, receivedMessageB] = await Promise.all([
-      consumePromiseA,
-      consumePromiseB,
-    ]);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     assert(
-      receivedMessageA.includes("Direct Message A"),
-      `Expected received message to contain "Direct", but got "${receivedMessageA}"`
+      messageReceivedA.includes("Direct Message A"),
+      `Expected received message to contain "Direct Message A", but got "${messageReceivedA}"`
     );
     assert(
-      receivedMessageB.includes("Direct Message B"),
-      `Expected received message to contain "Direct", but got "${receivedMessageB}"`
+      messageReceivedB.includes("Direct Message B"),
+      `Expected received message to contain "Direct Message B", but got "${messageReceivedB}"`
     );
     console.log("Test passed");
   }

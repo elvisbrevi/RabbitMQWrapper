@@ -88,7 +88,7 @@ class RabbitMQClient {
   /**
    * Consume un mensaje utilizando el patron de intercambio por defecto.
    * @param {DefaultConsumeOptions} options - Objeto con los parámetros necesarios para consumir el mensaje.
-   * @returns {Promise<String>} - Promise que resolve cuando se consume el mensaje correctamente.
+   * @returns {Promise<void>} - Promise que resolve cuando se consume el mensaje correctamente.
    * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la consumición del mensaje.
    * @example
    * const client = new RabbitMQClient();
@@ -101,11 +101,11 @@ class RabbitMQClient {
   public async consumeMessage(
     exchangeType: ExchangeType.DEFAULT,
     options: DefaultConsumeOptions
-  ): Promise<String>;
+  ): Promise<void>;
   /**
    * Consume un mensaje utilizando el patron de intercambio Direct.
    * @param {DirectConsumeOptions} options - Objeto con los parámetros necesarios para consumir el mensaje.
-   * @returns {Promise<String>} - Promise que resolve cuando se consume el mensaje correctamente.
+   * @returns {Promise<void>} - Promise que resolve cuando se consume el mensaje correctamente.
    * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la consumición del mensaje.
    * @example
    * const client = new RabbitMQClient();
@@ -119,11 +119,11 @@ class RabbitMQClient {
   public async consumeMessage(
     exchangeType: ExchangeType.DIRECT,
     options: DirectConsumeOptions
-  ): Promise<String>;
+  ): Promise<void>;
   /**
    * Consume un mensaje utilizando el patron de intercambio Fanout.
    * @param {FanoutConsumeOptions} options - Objeto con los parámetros necesarios para consumir el mensaje.
-   * @returns {Promise<String>} - Promise que resolve cuando se consume el mensaje correctamente.
+   * @returns {Promise<void>} - Promise que resolve cuando se consume el mensaje correctamente.
    * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la consumición del mensaje.
    * @example
    * const client = new RabbitMQClient();
@@ -136,7 +136,7 @@ class RabbitMQClient {
   public async consumeMessage(
     exchangeType: ExchangeType.FANOUT,
     options: FanoutConsumeOptions
-  ): Promise<String>;
+  ): Promise<void>;
 
   public async consumeMessage(
     exchangeType: ExchangeType,

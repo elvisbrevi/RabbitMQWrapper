@@ -39,7 +39,7 @@ export class DefaultExchange extends BaseExchange {
   /**
    * Consume un mensaje utilizando el patron de intercambio por defecto.
    * @param {DefaultConsumeOptions} options - Objeto con los parámetros necesarios para consumir el mensaje.
-   * @returns {Promise<String>} - Promise que resolve cuando se consume el mensaje correctamente.
+   * @returns {Promise<void>} - Promise que resolve cuando se consume el mensaje correctamente.
    * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la consumición del mensaje.
    * @example
    * const client = new RabbitMQClient();
@@ -52,7 +52,7 @@ export class DefaultExchange extends BaseExchange {
   public async consumeMessage({
     queue = "",
     onMessage,
-  }: DefaultConsumeOptions): Promise<String> {
+  }: DefaultConsumeOptions): Promise<void> {
     try {
       await this.connect();
       if (this.channel) {
@@ -61,20 +61,16 @@ export class DefaultExchange extends BaseExchange {
           `[*] Waiting for messages in '${queue}'. To exit press CTRL+C`
         );
 
-        return new Promise((resolve) => {
-          this.channel!.consume(
-            queue,
-            (msg) => {
-              if (msg !== null) {
-                const message = msg.content.toString();
-                onMessage(message);
-                this.channel!.cancel(msg.fields.consumerTag);
-                resolve(message);
-              }
-            },
-            { noAck: true }
-          );
-        });
+        await this.channel.consume(
+          queue,
+          (msg) => {
+            if (msg !== null) {
+              const message = msg.content.toString();
+              onMessage(message);
+            }
+          },
+          { noAck: true }
+        );
       } else {
         throw new Error("Error en la conexión a RabbitMQ");
       }

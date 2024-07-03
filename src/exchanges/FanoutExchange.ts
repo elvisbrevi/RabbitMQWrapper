@@ -42,7 +42,7 @@ export class FanoutExchange extends BaseExchange {
   /**
    * Consume un mensaje utilizando el patron de intercambio Fanout.
    * @param {FanoutConsumeOptions} options - Objeto con los parámetros necesarios para consumir el mensaje.
-   * @returns {Promise<String>} - Promise que resolve cuando se consume el mensaje correctamente.
+   * @returns {Promise<void>} - Promise que resolve cuando se consume el mensaje correctamente.
    * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la consumición del mensaje.
    * @example
    * const client = new RabbitMQClient();
@@ -55,7 +55,7 @@ export class FanoutExchange extends BaseExchange {
   public async consumeMessage({
     exchange = "",
     onMessage,
-  }: FanoutConsumeOptions): Promise<String> {
+  }: FanoutConsumeOptions): Promise<void> {
     try {
       await this.connect();
       if (this.channel) {
@@ -72,20 +72,16 @@ export class FanoutExchange extends BaseExchange {
         );
         await this.channel.bindQueue(q.queue, exchange, "");
 
-        return new Promise((resolve) => {
-          this.channel!.consume(
-            q.queue,
-            (msg) => {
-              if (msg !== null) {
-                const message = msg.content.toString();
-                onMessage(message);
-                this.channel!.cancel(msg.fields.consumerTag);
-                resolve(message);
-              }
-            },
-            { noAck: true }
-          );
-        });
+        await this.channel.consume(
+          q.queue,
+          (msg) => {
+            if (msg !== null) {
+              const message = msg.content.toString();
+              onMessage(message);
+            }
+          },
+          { noAck: true }
+        );
       } else {
         throw new Error("Error en la conexión a RabbitMQ");
       }

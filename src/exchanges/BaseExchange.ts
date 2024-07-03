@@ -21,5 +21,5 @@ export abstract class BaseExchange {
   }
 
   abstract sendMessage(options: BaseMessageOptions): Promise<void>;
-  abstract consumeMessage(options: BaseConsumeOptions): Promise<String>;
+  abstract consumeMessage(options: BaseConsumeOptions): Promise<void>;
 }
