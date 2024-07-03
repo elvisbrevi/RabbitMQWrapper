@@ -6,6 +6,8 @@ import {
   DirectConsumeOptions,
   FanoutMessageOptions,
   FanoutConsumeOptions,
+  HeadersMessageOptions,
+  HeadersConsumeOptions,
   RabbitMQConfig,
 } from "./types";
 import { ExchangeFactory } from "./exchanges/ExchangeFactory";
@@ -77,9 +79,36 @@ class RabbitMQClient {
     exchangeType: ExchangeType.FANOUT,
     options: FanoutMessageOptions
   ): Promise<void>;
+
+  /**
+   * Envía un mensaje utilizando el patron de intercambio Headers.
+   * El intercambio Headers es el que se utiliza para enviar mensajes con información adicional.
+   * @param {HeadersMessageOptions} options - Objeto con los parámetros necesarios para enviar el mensaje.
+   * @returns {Promise<void>} - Promise que resolve cuando el mensaje se envía correctamente.
+   * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la envío del mensaje.
+   * @example
+   * const client = new RabbitMQClient();
+   * const exchange = "headers-exchange";
+   * const headers = {
+   *   'recent_purchase': 'true',
+   *   'interested_category': 'electronics'
+   * }
+   * const message = "Test Message";
+   *
+   * await client.sendMessage(ExchangeType.HEADERS, { exchange, headers, message });
+   */
+  public async sendMessage(
+    exchangeType: ExchangeType.HEADERS,
+    options: HeadersMessageOptions
+  ): Promise<void>;
+
   public async sendMessage(
     exchangeType: ExchangeType,
-    options: DefaultMessageOptions | DirectMessageOptions | FanoutMessageOptions
+    options:
+      | DefaultMessageOptions
+      | DirectMessageOptions
+      | FanoutMessageOptions
+      | HeadersMessageOptions
   ) {
     const exchange = this.exchangeFactory.getExchange(exchangeType);
     await exchange.sendMessage(options);
@@ -138,9 +167,37 @@ class RabbitMQClient {
     options: FanoutConsumeOptions
   ): Promise<void>;
 
+  /**
+   * Consume un mensaje utilizando el patron de intercambio Headers.
+   * @param {HeadersConsumeOptions} options - Objeto con los parámetros necesarios para consumir el mensaje.
+   * @returns {Promise<void>} - Promise que resolve cuando se consume el mensaje correctamente.
+   * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la consumición del mensaje.
+   * @example
+   * const client = new RabbitMQClient();
+   * const exchange = "headers-exchange";
+   * const bindings = [
+   *   {
+   *     'recent_purchase': 'true',
+   *     'interested_category': 'electronics'
+   *   }
+   * ];
+   * const onMessage = (msg: string) => {
+   *   console.log(`[x] Received '${msg}' from exchange '${exchange}' and routing key '${key}'`);
+   * }
+   * await client.consumeMessage(ExchangeType.HEADERS, { exchange, bindings, onMessage });
+   */
+  public async consumeMessage(
+    exchangeType: ExchangeType.HEADERS,
+    options: HeadersConsumeOptions
+  ): Promise<void>;
+
   public async consumeMessage(
     exchangeType: ExchangeType,
-    options: DefaultConsumeOptions | DirectConsumeOptions | FanoutConsumeOptions
+    options:
+      | DefaultConsumeOptions
+      | DirectConsumeOptions
+      | FanoutConsumeOptions
+      | HeadersConsumeOptions
   ) {
     const exchange = this.exchangeFactory.getExchange(exchangeType);
     return await exchange.consumeMessage(options);

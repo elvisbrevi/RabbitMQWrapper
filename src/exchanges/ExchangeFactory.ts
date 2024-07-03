@@ -4,6 +4,7 @@ import { BaseExchange } from "./BaseExchange";
 import { DefaultExchange } from "./DefaultExchange";
 import { FanoutExchange } from "./FanoutExchange";
 import { DirectExchange } from "./DirectExchange";
+import { HeadersExchange } from "./HeadersExchange";
 
 export class ExchangeFactory {
   private exchanges: Map<ExchangeType, BaseExchange> = new Map();
@@ -25,7 +26,8 @@ export class ExchangeFactory {
         return new DirectExchange(this.config);
       case ExchangeType.FANOUT:
         return new FanoutExchange(this.config);
-      // Añadir más casos para otros tipos de exchanges
+      case ExchangeType.HEADERS:
+        return new HeadersExchange(this.config);
       default:
         throw new Error(`Exchange type ${exchangeType} not supported`);
     }

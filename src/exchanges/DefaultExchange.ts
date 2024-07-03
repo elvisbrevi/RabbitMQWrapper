@@ -18,7 +18,7 @@ export class DefaultExchange extends BaseExchange {
    * await client.sendMessage(ExchangeType.DEFAULT, { queue, message });
    */
   public async sendMessage({
-    queue = "",
+    queue,
     message,
   }: DefaultMessageOptions): Promise<void> {
     try {
@@ -50,7 +50,7 @@ export class DefaultExchange extends BaseExchange {
    * await client.consumeMessage(ExchangeType.DEFAULT, { queue, onMessage });
    */
   public async consumeMessage({
-    queue = "",
+    queue,
     onMessage,
   }: DefaultConsumeOptions): Promise<void> {
     try {

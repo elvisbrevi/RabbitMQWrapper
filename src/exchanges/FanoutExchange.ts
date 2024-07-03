@@ -19,7 +19,7 @@ export class FanoutExchange extends BaseExchange {
    * await client.sendMessage(ExchangeType.FANOUT, { exchange, message });
    */
   public async sendMessage({
-    exchange = "",
+    exchange,
     message,
   }: FanoutMessageOptions): Promise<void> {
     try {
@@ -53,7 +53,7 @@ export class FanoutExchange extends BaseExchange {
    * await client.consumeMessage(ExchangeType.FANOUT, { exchange, onMessage });
    */
   public async consumeMessage({
-    exchange = "",
+    exchange,
     onMessage,
   }: FanoutConsumeOptions): Promise<void> {
     try {

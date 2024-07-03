@@ -20,8 +20,8 @@ export class DirectExchange extends BaseExchange {
    * await client.sendMessage(ExchangeType.DIRECT, { exchange, key, message });
    */
   public async sendMessage({
-    exchange = "",
-    key = "",
+    exchange,
+    key,
     message,
   }: DirectMessageOptions): Promise<void> {
     try {
@@ -58,8 +58,8 @@ export class DirectExchange extends BaseExchange {
    * await client.consumeMessage(ExchangeType.DIRECT, { exchange, key, onMessage });
    */
   public async consumeMessage({
-    exchange = "",
-    key = "",
+    exchange,
+    key,
     onMessage,
   }: DirectConsumeOptions): Promise<void> {
     try {
