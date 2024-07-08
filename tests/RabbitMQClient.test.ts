@@ -241,12 +241,81 @@ import RabbitMQClient from "../src/RabbitMQClient";
     console.log("👍 Test passed");
   }
 
+  // Test del patrón de intercambio Topic
+  async function testTopicExchange() {
+    console.log(
+      "🧪 Test: debería enviar un mensaje distinto para cada cola Topic Exchange"
+    );
+    const client = new RabbitMQClient({ url: "localhost" });
+    const exchange = "topic-exchange";
+
+    let messageReceivedA: string[] = [];
+    let messageReceivedB: string[] = [];
+    let keyA = "shoes.expensive.red";
+    let keyB = "coat.cheap.blue";
+    let keyC = "coat.expensive.orange";
+    let keyD = "shoes.cheap.red";
+
+    // Configura los consumidores antes de enviar el mensaje
+    client.consumeMessage(ExchangeType.TOPIC, {
+      exchange,
+      keys: ["*.cheap.*", "*.*.red"],
+      onMessage: (msg: string) => {
+        console.log(
+          `[x] Received '${msg}' from exchange '${exchange}' (Consumer A)`
+        );
+        messageReceivedA.push(msg);
+      },
+    });
+
+    client.consumeMessage(ExchangeType.TOPIC, {
+      exchange,
+      keys: ["coat.#"],
+      onMessage: (msg: string) => {
+        console.log(
+          `[x] Received '${msg}' from exchange '${exchange}' (Consumer B)`
+        );
+        messageReceivedB.push(msg);
+      },
+    });
+
+    // Espera un momento para asegurarte de que los consumidores estén listos
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Envía los mensajes
+    await client.sendMessage(ExchangeType.TOPIC, {
+      exchange,
+      key: keyA,
+      message: "Cheap and Red",
+    });
+
+    await client.sendMessage(ExchangeType.TOPIC, {
+      exchange,
+      key: keyB,
+      message: "Coats",
+    });
+
+    // Espera a que ambos consumidores reciban el mensaje
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    assert(
+      messageReceivedA.includes("Cheap and Red"),
+      `Consumer A expected received message to contain "Cheap, Red and Coats", but got "${messageReceivedA}"`
+    );
+    assert(
+      messageReceivedB.includes("Coats"),
+      `Consumer B expected received message to contain "Cheap, Red and Coats", but got "${messageReceivedB}"`
+    );
+    console.log("👍 Test passed");
+  }
+
   // Ejecuta las pruebas
   try {
     await testDefaultExchange();
     await testFanoutExchange();
     await testDirectExchange();
     await testHeadersExchange();
+    await testTopicExchange();
   } catch (error) {
     console.error("🚩 Test failed:", error);
   }

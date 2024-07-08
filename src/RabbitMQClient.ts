@@ -8,6 +8,8 @@ import {
   FanoutConsumeOptions,
   HeadersMessageOptions,
   HeadersConsumeOptions,
+  TopicMessageOptions,
+  TopicConsumeOptions,
   RabbitMQConfig,
 } from "./types";
 import { ExchangeFactory } from "./exchanges/ExchangeFactory";
@@ -102,6 +104,25 @@ class RabbitMQClient {
     options: HeadersMessageOptions
   ): Promise<void>;
 
+  /**
+   * Envía un mensaje utilizando el patron de intercambio Topic.
+   * El intercambio Topic es el que se utiliza para enviar mensajes a varios destinatarios.
+   * @param {TopicMessageOptions} options - Objeto con los parámetros necesarios para enviar el mensaje.
+   * @returns {Promise<void>} - Promise que resolve cuando el mensaje se envía correctamente.
+   * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la envío del mensaje.
+   * @example
+   * const client = new RabbitMQClient();
+   * const exchange = "topic-exchange";
+   * const key = "test-key";
+   * const message = "Test Message";
+   *
+   * await client.sendMessage(ExchangeType.TOPIC, { exchange, key, message });
+   */
+  public async sendMessage(
+    exchangeType: ExchangeType.TOPIC,
+    options: TopicMessageOptions
+  ): Promise<void>;
+
   public async sendMessage(
     exchangeType: ExchangeType,
     options:
@@ -109,6 +130,7 @@ class RabbitMQClient {
       | DirectMessageOptions
       | FanoutMessageOptions
       | HeadersMessageOptions
+      | TopicMessageOptions
   ) {
     const exchange = this.exchangeFactory.getExchange(exchangeType);
     await exchange.sendMessage(options);
@@ -191,6 +213,25 @@ class RabbitMQClient {
     options: HeadersConsumeOptions
   ): Promise<void>;
 
+  /**
+   * Consume un mensaje utilizando el patron de intercambio Topic.
+   * @param {TopicConsumeOptions} options - Objeto con los parámetros necesarios para consumir el mensaje.
+   * @returns {Promise<void>} - Promise que resolve cuando se consume el mensaje correctamente.
+   * @throws {Error} - Si se produjo un error durante la conexión a RabbitMQ o la consumición del mensaje.
+   * @example
+   * const client = new RabbitMQClient();
+   * const exchange = "topic-exchange";
+   * const key = "test-key";
+   * const onMessage = (msg: string) => {
+   *   console.log(`[x] Received '${msg}' from exchange '${exchange}' and routing key '${key}'`);
+   * }
+   * await client.consumeMessage(ExchangeType.TOPIC, { exchange, key, onMessage });
+   */
+  public async consumeMessage(
+    exchangeType: ExchangeType.TOPIC,
+    options: TopicConsumeOptions
+  ): Promise<void>;
+
   public async consumeMessage(
     exchangeType: ExchangeType,
     options:
@@ -198,6 +239,7 @@ class RabbitMQClient {
       | DirectConsumeOptions
       | FanoutConsumeOptions
       | HeadersConsumeOptions
+      | TopicConsumeOptions
   ) {
     const exchange = this.exchangeFactory.getExchange(exchangeType);
     return await exchange.consumeMessage(options);
