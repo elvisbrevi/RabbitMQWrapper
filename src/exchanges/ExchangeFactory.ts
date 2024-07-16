@@ -8,15 +8,10 @@ import { HeadersExchange } from "./HeadersExchange";
 import { TopicExchange } from "./TopicExchange";
 
 export class ExchangeFactory {
-  private exchanges: Map<ExchangeType, BaseExchange> = new Map();
-
   constructor(private config: RabbitMQConfig) {}
 
   public getExchange(exchangeType: ExchangeType): BaseExchange {
-    if (!this.exchanges.has(exchangeType)) {
-      this.exchanges.set(exchangeType, this.createExchange(exchangeType));
-    }
-    return this.exchanges.get(exchangeType)!;
+    return this.createExchange(exchangeType);
   }
 
   private createExchange(exchangeType: ExchangeType): BaseExchange {

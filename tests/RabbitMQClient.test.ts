@@ -45,9 +45,11 @@ import RabbitMQClient from "../src/RabbitMQClient";
     );
     const client = new RabbitMQClient({ url: "localhost" });
     const exchange = "fanout-exchange";
+    const exchange2 = "fanout-exchange2";
 
     let messageReceivedA = false;
     let messageReceivedB = false;
+    let messageReceivedC = false;
 
     // Configura los consumidores antes de enviar el mensaje
     client.consumeMessage(ExchangeType.FANOUT, {
@@ -63,6 +65,34 @@ import RabbitMQClient from "../src/RabbitMQClient";
         );
       },
     });
+
+    // Configura los consumidores antes de enviar el mensaje
+    client.consumeMessage(ExchangeType.FANOUT, {
+      exchange: exchange2,
+      onMessage: (msg: string) => {
+        console.log(
+          `[x] Received '${msg}' from exchange '${exchange2}' (Consumer C)`
+        );
+        messageReceivedC = true;
+        assert(
+          msg.includes("Fanout"),
+          `Expected received message to contain "Fanout", but got "${msg}"`
+        );
+      },
+    });
+    // Espera un momento para asegurarte de que los consumidores estén listos
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    // Envía el mensaje
+    await client.sendMessage(ExchangeType.FANOUT, {
+      exchange: exchange2,
+      message: "Fanout Message C",
+    });
+
+    // Espera a que ambos consumidores reciban el mensaje
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    assert(messageReceivedC, "Consumer C did not receive the message");
 
     client.consumeMessage(ExchangeType.FANOUT, {
       exchange,

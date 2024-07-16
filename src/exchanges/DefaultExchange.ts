@@ -71,6 +71,8 @@ export class DefaultExchange extends BaseExchange {
           },
           { noAck: true }
         );
+
+        await this.closeConnection();
       } else {
         throw new Error("Error en la conexión a RabbitMQ");
       }

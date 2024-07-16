@@ -20,6 +20,16 @@ export abstract class BaseExchange {
     }
   }
 
+  // Método para cerrar la conexión y el canal
+  protected async closeConnection(): Promise<void> {
+    if (this.channel) {
+      await this.channel.close();
+    }
+    if (this.connection) {
+      await this.connection.close();
+    }
+  }
+
   abstract sendMessage(options: BaseMessageOptions): Promise<void>;
   abstract consumeMessage(options: BaseConsumeOptions): Promise<void>;
 }
