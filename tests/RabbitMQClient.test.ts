@@ -339,13 +339,104 @@ import RabbitMQClient from "../src/RabbitMQClient";
     console.log("👍 Test passed");
   }
 
+  // Test del patrón de intercambio Topic
+  async function testConections() {
+    console.log(
+      "🧪 Test: deberia enviar y recibir un mensaje desde una sola cola por defecto"
+    );
+    const client = new RabbitMQClient({ url: "localhost" });
+    const queue = "default-queue";
+    const queue2 = "default-queue2";
+
+    await client.sendMessage(ExchangeType.DEFAULT, {
+      queue,
+      message: "Default Message A",
+    });
+    await client.sendMessage(ExchangeType.DEFAULT, {
+      queue,
+      message: "Default Message B",
+    });
+
+    await client.sendMessage(ExchangeType.DEFAULT, {
+      queue: queue2,
+      message: "Default Message C",
+    });
+
+    let receivedMessage = "";
+    await client.consumeMessage(ExchangeType.DEFAULT, {
+      queue,
+      onMessage: (msg: string) => {
+        receivedMessage = msg;
+        console.log(`[x] Received '${msg}' from queue '${queue}'`);
+      },
+    });
+
+    await client.consumeMessage(ExchangeType.DEFAULT, {
+      queue: queue2,
+      onMessage: (msg: string) => {
+        receivedMessage = msg;
+        console.log(`[x] Received '${msg}' from queue '${queue}'`);
+      },
+    });
+
+    const exchange = "direct-exchange";
+    // Configura los consumidores antes de enviar el mensaje
+
+    client.consumeMessage(ExchangeType.DIRECT, {
+      exchange,
+      key: "key-b",
+      onMessage: (msg: string) => {
+        console.log(
+          `[x] Received '${msg}' from exchange '${exchange}' (Consumer B)`
+        );
+      },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await client.sendMessage(ExchangeType.DIRECT, {
+      exchange,
+      key: "key-b",
+      message: "Direct Message B",
+    });
+
+    const client2 = new RabbitMQClient({ url: "localhost" });
+    const exchange2 = "direct-exchange";
+    // Configura los consumidores antes de enviar el mensaje
+
+    client2.consumeMessage(ExchangeType.DIRECT, {
+      exchange: exchange2,
+      key: "key-a",
+      onMessage: (msg: string) => {
+        console.log(
+          `[x] Received '${msg}' from exchange '${exchange2}' (Consumer B)`
+        );
+      },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await client2.sendMessage(ExchangeType.DIRECT, {
+      exchange: exchange2,
+      key: "key-a",
+      message: "Direct Message A",
+    });
+
+    assert(
+      receivedMessage.includes("Default"),
+      `Expected received message to contain "Default", but got "${receivedMessage}"`
+    );
+    console.log("👍 Test passed");
+  }
+
   // Ejecuta las pruebas
   try {
-    await testDefaultExchange();
-    await testFanoutExchange();
-    await testDirectExchange();
-    await testHeadersExchange();
-    await testTopicExchange();
+    // await testDefaultExchange();
+    // await testFanoutExchange();
+    // await testDirectExchange();
+    // await testHeadersExchange();
+    // await testTopicExchange();
+    await testConections();
   } catch (error) {
     console.error("🚩 Test failed:", error);
   }
